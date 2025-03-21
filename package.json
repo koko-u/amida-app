@@ -4,7 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "lint": "ng lint",
+    "fmt": "prettier --write ./src"
   },
   "dependencies": {
     "@angular/animations": "^19.0.6",
@@ -13,15 +15,26 @@
     "@angular/core": "^19.0.6",
     "@angular/forms": "^19.0.6",
     "@angular/platform-browser": "^19.0.6",
+    "@angular/platform-browser-dynamic": "^19.2.3",
     "@angular/router": "^19.0.6",
     "rxjs": "^7.8.1",
     "tslib": "^2.5.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^19.0.7",
+    "@angular-devkit/build-angular": "^19.2.4",
     "@angular/cli": "^19.0.7",
     "@angular/compiler-cli": "^19.0.6",
-    "typescript": "^5.6.3"
+    "@eslint/js": "^9.22.0",
+    "angular-eslint": "19.2.1",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "8.26.0"
   }
 }
