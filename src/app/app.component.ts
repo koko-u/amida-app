@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, computed, ElementRef, signal, viewChild } from '@angular/core'
 import { FormsModule, NgForm } from '@angular/forms'
+import { diff, HorizontalLine, VerticalLine } from './amida.model'
 
 @Component({
   selector: 'app-root',
@@ -8,19 +9,27 @@ import { FormsModule, NgForm } from '@angular/forms'
   imports: [FormsModule],
 })
 export class AppComponent implements AfterViewInit {
+  // Canvas を含む div 要素
   canvasContainer = viewChild.required<ElementRef>('canvasContainer')
-  canvasWidth = computed(() => {
-    const canvasContainer = this.canvasContainer()
-    const element = canvasContainer.nativeElement as HTMLElement
-    return element.offsetWidth
-  })
+  // Canvas を含む div 要素の矩形領域
   canvasBoundaryRectangle = computed(() => {
     const canvasContainer = this.canvasContainer()
     const element = canvasContainer.nativeElement as HTMLElement
     return element.getBoundingClientRect()
   })
-  canvasHeight = signal<number>(500)
 
+  // キャンバスの幅
+  canvasWidth = computed(() => {
+    const rect = this.canvasBoundaryRectangle()
+    return rect.width
+  })
+  // キャンバスの高さ
+  canvasHeight = computed(() => {
+    const rect = this.canvasBoundaryRectangle()
+    return rect.height
+  })
+
+  // キャンバス
   canvasAmida = viewChild.required<ElementRef>('canvasAmida')
   canvasContext = computed(() => {
     const canvasAmida = this.canvasAmida()
@@ -28,16 +37,17 @@ export class AppComponent implements AfterViewInit {
     return canvas.getContext('2d')
   })
 
+  // あみだ籤の縦棒の数を指定するフォーム
   linesCountForm = viewChild.required<NgForm>('linesCountForm')
   linesCount = signal<number>(5)
 
   // あみだ籤の結果
   results = signal<number[]>([])
 
-  // 縦棒の x 軸の値
-  verticalLines = signal<number[]>([])
-  // 横棒の x 軸の値は横棒が曳かれる中間値、と y 軸の値
-  horizontalLines = signal<{ start: number; end: number; y: number }[]>([])
+  // あみだ籤の縦棒の集合を縦棒を描画する x 軸の位置で表現する
+  verticalLines = signal<VerticalLine[]>([])
+  // あみだ籤の横棒は横棒を結ぶ縦棒(2本)の x 軸の位置と横棒を描画する y 軸の値で表現する
+  horizontalLines = signal<HorizontalLine[]>([])
 
   // キャンバスのフォントサイズを変更する
   ngAfterViewInit(): void {
@@ -71,10 +81,10 @@ export class AppComponent implements AfterViewInit {
     // クリックした場所が縦棒の間かを判定する
     const lineCounts = this.verticalLines().length
     for (let i = 0; i < lineCounts - 1; i++) {
-      const from = this.verticalLines()[i]
-      const to = this.verticalLines()[i + 1]
-      if (x > from && x < to) {
-        this.addHorizontalLine(from, to, y)
+      const start = this.verticalLines()[i]
+      const end = this.verticalLines()[i + 1]
+      if (x > start.x && x < end.x) {
+        this.addHorizontalLine(start, end, y)
         return
       }
     }
@@ -100,7 +110,7 @@ export class AppComponent implements AfterViewInit {
     // 縦棒の描画
     for (let i = 1; i <= linesCount; i++) {
       const x = spacing * i
-      this.verticalLines.update((current) => [...current, x])
+      this.verticalLines.update((current) => [...current, { x }])
       this.results.update((current) => [...current, i])
 
       // 縦棒
@@ -116,7 +126,7 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  private addHorizontalLine(start: number, end: number, y: number) {
+  private addHorizontalLine(start: VerticalLine, end: VerticalLine, y: number) {
     const ctx = this.canvasContext()
     if (!ctx) {
       return
@@ -126,8 +136,8 @@ export class AppComponent implements AfterViewInit {
 
     // 横棒の描画
     ctx.beginPath()
-    ctx.moveTo(start, y)
-    ctx.lineTo(end, y)
+    ctx.moveTo(start.x, y)
+    ctx.lineTo(end.x, y)
     ctx.stroke()
 
     // あみだくじの結果を更新する
@@ -136,20 +146,39 @@ export class AppComponent implements AfterViewInit {
 
   private updateResults() {
     const verticalLines = this.verticalLines()
+    // 横棒を y 座標の昇順にソートする
+    const sortedHorizontalLines = this.horizontalLines()
+      .slice()
+      .sort((a, b) => a.y - b.y)
 
-    this.results.update((current) =>
-      current.map((_, index) => {
-        let position = verticalLines[index]
-        for (const line of this.horizontalLines()) {
-          if (Math.abs(position - line.start) < 10) {
-            position = verticalLines[verticalLines.indexOf(position) + 1] // 右へ
-          } else if (Math.abs(position - line.end) < 10) {
-            position = verticalLines[verticalLines.indexOf(position) - 1] // 左へ
-          }
+    const spacing = this.canvasWidth() / (verticalLines.length + 1)
+    const delta = spacing / 10
+
+    // 1, 2, 3, ... をあみだ籤に適用して行き着いた先の配列を求める
+    const newResults = new Array(verticalLines.length)
+    for (let index = 0; index < verticalLines.length; index++) {
+      // index 番目の x 軸位置
+      let verticalIndex = index
+      let verticalPosition = verticalLines[index]
+
+      // index 番目の番号が横棒を順にたどって、行き着いた x 軸の位置を求める
+      for (const horizontalLine of sortedHorizontalLines) {
+        if (diff(verticalPosition, horizontalLine.start) < delta) {
+          // 右へ
+          verticalIndex += 1
+          verticalPosition = verticalLines[verticalIndex]
+        } else if (diff(verticalPosition, horizontalLine.end) < delta) {
+          // 左へ
+          verticalIndex -= 1
+          verticalPosition = verticalLines[verticalIndex]
         }
-        return verticalLines.indexOf(position) + 1
-      }),
-    )
+      }
+
+      // x 軸の場所に index + 1 の数字を格納する
+      newResults[verticalIndex] = index + 1
+    }
+
+    this.results.set(newResults)
 
     this.drawResults()
   }
@@ -164,8 +193,8 @@ export class AppComponent implements AfterViewInit {
     ctx.clearRect(0, this.canvasHeight() - 50, this.canvasWidth(), 50)
 
     for (let i = 0; i < this.results().length; i++) {
-      const x = this.verticalLines()[i]
-      ctx.fillText(`${this.results()[i]}`, x - 5, this.canvasHeight() - 30) // 下の番号
+      const line = this.verticalLines()[i]
+      ctx.fillText(`${this.results()[i]}`, line.x - 5, this.canvasHeight() - 30) // 下の番号
     }
   }
 }
