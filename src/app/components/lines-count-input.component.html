@@ -1,0 +1,27 @@
+<form
+    #linesCountForm="ngForm"
+    (ngSubmit)="onGenerate()"
+>
+    <div class="flex items-center">
+        <input
+                [(ngModel)]="linesCount"
+                class="w-72 rounded border border-gray-300 bg-white px-3 py-1 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                max="10"
+                min="1"
+                name="linesCount"
+                placeholder="縦棒の数"
+                required
+                type="number"
+        />
+        <button
+                class="ms-1 rounded border-0 bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-600 focus:outline-none"
+                id="generate"
+                type="submit"
+        >
+            <div class="flex justify-between gap-1 items-center w-full">
+                <ng-icon name="tablerCircleCheck"/>
+                <span>生成</span>
+            </div>
+        </button>
+    </div>
+</form>

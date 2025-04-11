@@ -32,6 +32,12 @@ importers:
       '@angular/router':
         specifier: ^19.0.6
         version: 19.2.3(@angular/common@19.2.3(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.3(@angular/animations@19.2.3(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.3(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)
+      '@ng-icons/core':
+        specifier: ^31.2.0
+        version: 31.2.0(@angular/common@19.2.3(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
+      '@ng-icons/tabler-icons':
+        specifier: ^31.2.0
+        version: 31.2.0
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
@@ -1378,6 +1384,16 @@ packages:
   '@napi-rs/nice@1.0.1':
     resolution: {integrity: sha512-zM0mVWSXE0a0h9aKACLwKmD6nHcRiKrPpCfvaKqG1CqDEyjEawId0ocXxVzPMCAm6kkWr2P025msfxXEnt8UGQ==}
     engines: {node: '>= 10'}
+
+  '@ng-icons/core@31.2.0':
+    resolution: {integrity: sha512-9l2oVD0n/v6YL6MPsdGmqGWLnq4P9Ds1omGwueXoaq0ZXTZTwI4E16NpWDItDE/sg1hLt+yR62rgKc4JCTGpvg==}
+    peerDependencies:
+      '@angular/common': '>=18.0.0'
+      '@angular/core': '>=18.0.0'
+      rxjs: ^6.5.3 || ^7.4.0
+
+  '@ng-icons/tabler-icons@31.2.0':
+    resolution: {integrity: sha512-Mwh+EXwggiVn+wVQwK5Edk3zvI1T/zIuMr2AWmr5ITQjmBmb9X8QyM6giRbaS9nw8HRlc8leSrgw9feqfMSqjA==}
 
   '@ngtools/webpack@19.2.4':
     resolution: {integrity: sha512-I2vG9Yb0W/PR5+quBmSUk6uGa4xN/YvfJk+30bFDB/CpJlTQEo+3AOFCDYcDOxrbtjON80VdFYPypQ5ztbpdYw==}
@@ -5892,6 +5908,17 @@ snapshots:
       '@napi-rs/nice-win32-ia32-msvc': 1.0.1
       '@napi-rs/nice-win32-x64-msvc': 1.0.1
     optional: true
+
+  '@ng-icons/core@31.2.0(@angular/common@19.2.3(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)':
+    dependencies:
+      '@angular/common': 19.2.3(@angular/core@19.2.3(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
+      '@angular/core': 19.2.3(rxjs@7.8.2)(zone.js@0.15.0)
+      rxjs: 7.8.2
+      tslib: 2.8.1
+
+  '@ng-icons/tabler-icons@31.2.0':
+    dependencies:
+      tslib: 2.8.1
 
   '@ngtools/webpack@19.2.4(@angular/compiler-cli@19.2.3(@angular/compiler@19.2.3)(typescript@5.8.2))(typescript@5.8.2)(webpack@5.98.0(esbuild@0.25.1))':
     dependencies:
